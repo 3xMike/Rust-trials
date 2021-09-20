@@ -10,23 +10,21 @@ fn search_in(filename : &String, path : &Path) ->
     let mut result = Vec::new();
 
     queue.push_back( fs::read_dir(path)? );
-                //need Iter over directs and iter filenames
-    queue.push_back( fs::read_dir(path)? );//12312312312?????@3!?3
     while !queue.is_empty() {
         for entry in queue.pop_front(){// entry - ReadDir
-            for dir_entry in entry.filter(|x|x.as_ref().expect("Can't ReadDir")
+            for dir_entry in entry{//dir_entry - Result<DirEntry>
+                let dir_entry = dir_entry?;
+                if dir_entry
                 .file_name().into_string()
-                .expect("Can't convert OsString") == *filename){
-                result.push(dir_entry?.path());
-            }
-        }
-        for entry in queue.pop_front(){
-            for dir_entry in entry.filter(|x|x.as_ref().expect("Can't ReadDir")
+                .expect("Can't read OsString") == *filename{
+                    result.push(dir_entry.path());
+                }
+                if dir_entry
                 .file_type().expect("Can't determine file_type")
-                .is_dir()){
-                let dir_path = dir_entry?.path();
-                queue.push_back(fs::read_dir(dir_path.as_path())?);
-                queue.push_back(fs::read_dir(dir_path.as_path())?);
+                .is_dir(){
+
+                    queue.push_back(fs::read_dir(dir_entry.path().as_path())?);
+                }
             }
         }
     }
