@@ -1,0 +1,2 @@
+# Rust-trials
+learning Rust
