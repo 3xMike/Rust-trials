@@ -1,14 +1,6 @@
 use std::fs;
-use std::cmp::Ordering;
 
-pub fn exec(mut _args : Vec<String>) -> Result<(), String>{
-    match _args.len().partial_cmp(&2).unwrap(){
-        Ordering::Less => return Err("not enough args".to_string()),
-        Ordering::Greater => return Err("too many args".to_string()),
-        Ordering::Equal => (), 
-    }
-    let filename = _args.remove(1);
-    let substring = _args.remove(0);
+pub fn exec<'a>(filename : &str, substring : &str) -> Result<(), String>{
 
     let file_content = match fs::read_to_string(filename){
         Err(_) => return Err("Can't read the file".to_string()),
