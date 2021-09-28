@@ -76,9 +76,9 @@ impl Drop for ThreadPool {
 
 pub fn run(){
     {
-        let pull = ThreadPool::new(4);
+        let pool = ThreadPool::new(4);
         for _ in 0..20{
-            pull.execute(move || {sleep(std::time::Duration::new(2,0))});
+            pool.execute(move || {sleep(std::time::Duration::new(2,0))});
         }
     }
     println!("run worked well");
