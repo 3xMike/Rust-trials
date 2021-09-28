@@ -1,15 +1,23 @@
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
+use core_utils::{cat, grep, find, threadpull};
 
 pub fn main() {
+    threadpull::run();
     let matches = App::new("My core utils")
         .version("1.0")
         .author("Mikhailov M. <mikhailov.mm@phystech.edu>")
         .about("Some default config utils")
         .group(ArgGroup::with_name("commands")
             .required(true)
-            .args(&["cat","grep","find"])
+            .args(&["cat","grep","find", "none"])
             .multiple(false)
+        )
+        .arg(Arg::with_name("none")
+        .short("n")
+        .long("none")
+        .takes_value(false)
+        .help("Do nothing (I'm testing main)")
         )
         .arg(Arg::with_name("cat")
             .short("c")
@@ -65,9 +73,4 @@ pub fn main() {
             }
         }  
     }
-
 }
-
-mod cat;
-mod find;
-mod grep;
