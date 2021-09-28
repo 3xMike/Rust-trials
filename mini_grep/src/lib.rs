@@ -1,7 +1,7 @@
 #[cfg(test)]
 mod tests;
 
-pub mod threadpull;
+pub mod threadpool;
 pub mod cat;
 pub mod find;
 pub mod grep;
