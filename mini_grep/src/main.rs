@@ -1,9 +1,9 @@
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
-use core_utils::{cat, grep, find, threadpull};
+use core_utils::{cat, grep, find, threadpool};
 
 pub fn main() {
-    threadpull::run();
+    threadpool::run();
     let matches = App::new("My core utils")
         .version("1.0")
         .author("Mikhailov M. <mikhailov.mm@phystech.edu>")
