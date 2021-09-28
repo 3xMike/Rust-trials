@@ -33,22 +33,22 @@ impl Worker {
     } 
 }
 
-pub struct ThreadPull {
+pub struct ThreadPool {
     workers : Vec<Worker>,
     job_channel : Arc<Mutex<mpsc::Receiver<JobMessage>>>,
     sender : mpsc::Sender<JobMessage>,
 }
 //send message on channel : stop or do closure 
 
-impl ThreadPull {
-    pub fn new(number_of_threads : u32) -> ThreadPull {
+impl ThreadPool {
+    pub fn new(number_of_threads : u32) -> ThreadPool {
         let mut workers = Vec::with_capacity(number_of_threads.try_into().unwrap());
         let (sender, receiver) = mpsc::channel::<JobMessage>();
         let job_channel = Arc::new(Mutex::new(receiver));
         for id in 0..number_of_threads {
             workers.push(Worker::new(id, job_channel.clone()));
         }
-        ThreadPull { workers, job_channel, sender}
+        ThreadPool { workers, job_channel, sender}
     }
 
     pub fn execute<T>(&self, job : T) 
@@ -58,7 +58,7 @@ impl ThreadPull {
     }
 }
 
-impl Drop for ThreadPull {
+impl Drop for ThreadPool {
     fn drop(&mut self) {
         for _ in &mut self.workers {
             self.sender.send(JobMessage::StopWorking).expect("Pull couldn't send stop message");
@@ -76,7 +76,7 @@ impl Drop for ThreadPull {
 
 pub fn run(){
     {
-        let pull = ThreadPull::new(4);
+        let pull = ThreadPool::new(4);
         for _ in 0..20{
             pull.execute(move || {sleep(std::time::Duration::new(2,0))});
         }
