@@ -1,23 +1,16 @@
 extern crate clap;
 use clap::{App, Arg, ArgGroup};
-use core_utils::{cat, grep, find, threadpool};
+use core_utils::{cat, grep, find};
 
 pub fn main() {
-    threadpool::run();
     let matches = App::new("My core utils")
         .version("1.0")
         .author("Mikhailov M. <mikhailov.mm@phystech.edu>")
         .about("Some default config utils")
         .group(ArgGroup::with_name("commands")
             .required(true)
-            .args(&["cat","grep","find", "none"])
+            .args(&["cat","grep","find"])
             .multiple(false)
-        )
-        .arg(Arg::with_name("none")
-        .short("n")
-        .long("none")
-        .takes_value(false)
-        .help("Do nothing (I'm testing main)")
         )
         .arg(Arg::with_name("cat")
             .short("c")
@@ -38,9 +31,20 @@ pub fn main() {
             .short("f")
             .long("find")
             .takes_value(true)
-            .help("find file or dir in given dir")
+            .help("Find file or dir in given dir")
             .max_values(2)
 //            .value_names(&["FILENAME", "BASE_DIR"])
+        )
+        .arg(
+            Arg::with_name("threads")
+            .short("t")
+            .long("thread")
+            .takes_value(true)
+            .help("Executing find utile with multithreading")
+            .number_of_values(1)
+            .alias("find")
+            .required(false)
+            .default_value("1")
         )
         .get_matches();
 
@@ -68,7 +72,11 @@ pub fn main() {
                 Some(dir) => dir,
                 None => ".",
             };
-            if let Err(e) = find::exec(file,dir){
+            let threads = match matches.value_of("threads") {
+                None => 1,
+                Some(value) => value.parse::<usize>().unwrap(),                
+            };
+            if let Err(e) = find::exec(file,dir, threads){
                 panic!("{}", e);
             }
         }  
